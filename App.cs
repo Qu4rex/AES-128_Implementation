@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using System.Diagnostics;
+using System.IO;
 
 namespace MyApp
 {
@@ -9,10 +10,20 @@ namespace MyApp
         static void Main(string[] args)
         {
             EnvReader.Load(".env");
+            string filePath = "input.txt";
 
             Console.WriteLine();
-            string plaintext = "sometext";
+            string plaintext = Environment.GetEnvironmentVariable("TEXT");
+
+            if (File.Exists(filePath))
+            {
+                plaintext = File.ReadAllText(filePath, Encoding.UTF8);
+                Console.WriteLine($"Файл загружен: {filePath}");
+                Console.WriteLine($"Размер файла: {plaintext.Length} символов, ~{plaintext.Length * sizeof(char) / 1024} KB");
+            }
+
             string key = Environment.GetEnvironmentVariable("KEY");
+            
             string iv = "1234567890ABCDEF";
 
             Console.WriteLine($"Plaintext: {plaintext}");
@@ -53,6 +64,10 @@ namespace MyApp
             AESStandard aesStandard = new AESStandard();
             Stopwatch sw = new Stopwatch();
 
+            byte[] warmUpData = new byte[16];
+            aesCustom.EncryptECB(warmUpData, keyBytes);
+            aesStandard.EncryptECB(warmUpData, keyBytes);
+
             sw.Start();
             byte[] encryptedCustom = aesCustom.EncryptECB(plaintextBytes, keyBytes);
             sw.Stop();
@@ -63,9 +78,15 @@ namespace MyApp
             sw.Stop();
             long decryptCustomTime = sw.ElapsedTicks;
 
-
+            sw.Restart();
             byte[] encryptedStandard = aesStandard.EncryptECB(plaintextBytes, keyBytes);
+            sw.Stop();
+            long encryptStandartTime = sw.ElapsedTicks;
+
+            sw.Restart();
             byte[] decryptedStandard = aesStandard.DecryptECB(encryptedStandard, keyBytes);
+            sw.Stop();
+            long decryptStandartTime = sw.ElapsedTicks;
 
             string encryptedCustomHex = BitConverter.ToString(encryptedCustom).Replace("-", "");
             string encryptedStandardHex = BitConverter.ToString(encryptedStandard).Replace("-", "");
@@ -81,6 +102,9 @@ namespace MyApp
             Console.WriteLine("\nExecution Time (ms):");
             Console.WriteLine($"Custom Encryption:  {encryptCustomTime * msPerTick:F4} ms");
             Console.WriteLine($"Custom Decryption:  {decryptCustomTime * msPerTick:F4} ms");
+
+            Console.WriteLine($"Standart Encryption:  {encryptStandartTime * msPerTick:F4} ms");
+            Console.WriteLine($"Standart Decryption:  {decryptStandartTime * msPerTick:F4} ms");
         }
 
         static void TestCBC(byte[] plaintextBytes, byte[] keyBytes, byte[] ivBytes)
@@ -88,6 +112,10 @@ namespace MyApp
             AESCustom aesCustom = new AESCustom();
             AESStandard aesStandard = new AESStandard();
             Stopwatch sw = new Stopwatch();
+
+            byte[] warmUpData = new byte[16];
+            aesCustom.EncryptECB(warmUpData, keyBytes);
+            aesStandard.EncryptECB(warmUpData, keyBytes);
 
             sw.Start();
             byte[] encryptedCustom = aesCustom.EncryptCBC(plaintextBytes, keyBytes, ivBytes);
@@ -99,8 +127,15 @@ namespace MyApp
             sw.Stop();
             long decryptCustomTime = sw.ElapsedTicks;
 
+            sw.Restart();
             byte[] encryptedStandard = aesStandard.EncryptCBC(plaintextBytes, keyBytes, ivBytes);
+            sw.Stop();
+            long encryptStandartTime = sw.ElapsedTicks;
+            
+            sw.Restart();
             byte[] decryptedStandard = aesStandard.DecryptCBC(encryptedStandard, keyBytes, ivBytes);
+            sw.Stop();
+            long decryptStandartTime = sw.ElapsedTicks;
 
             string encryptedCustomHex = BitConverter.ToString(encryptedCustom).Replace("-", "");
             string encryptedStandardHex = BitConverter.ToString(encryptedStandard).Replace("-", "");
@@ -116,6 +151,9 @@ namespace MyApp
             Console.WriteLine("\nExecution Time (ms):");
             Console.WriteLine($"Custom Encryption:  {encryptCustomTime * msPerTick:F4} ms");
             Console.WriteLine($"Custom Decryption:  {decryptCustomTime * msPerTick:F4} ms");
+
+            Console.WriteLine($"Standart Encryption:  {encryptStandartTime * msPerTick:F4} ms");
+            Console.WriteLine($"Standart Decryption:  {decryptStandartTime * msPerTick:F4} ms");
         }
     }
 
