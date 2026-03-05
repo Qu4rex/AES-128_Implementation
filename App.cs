@@ -9,24 +9,47 @@ namespace MyApp
     {
         static void Main(string[] args)
         {
-            EnvReader.Load(".env");
-            string filePath = "input.txt";
+            EnvReader.Load("C:\\Users\\dmana\\Desktop\\Уник\\Алгоритмы\\Исследовательские\\AES C#\\AES-128_Implementation\\AES-128_Implementation\\.env");
+            string filePath = "C:\\Users\\dmana\\Desktop\\Уник\\Алгоритмы\\Исследовательские\\AES C#\\AES-128_Implementation\\AES-128_Implementation\\input.txt";
+            string plaintext = "";
 
-            Console.WriteLine();
-            string plaintext = Environment.GetEnvironmentVariable("TEXT");
+            Console.WriteLine("");
+            Console.WriteLine("1 - input.txt");
+            Console.WriteLine("2 - .env");
+            Console.Write("Взять текст для шифрования из: ");
 
-            if (File.Exists(filePath))
+            string input = Console.ReadLine();
+
+            switch (input)
             {
-                plaintext = File.ReadAllText(filePath, Encoding.UTF8);
-                Console.WriteLine($"Файл загружен: {filePath}");
-                Console.WriteLine($"Размер файла: {plaintext.Length} символов, ~{plaintext.Length * sizeof(char) / 1024} KB");
+                case "1":
+                    if (File.Exists(filePath))
+                    {
+                        plaintext = File.ReadAllText(filePath, Encoding.UTF8);
+                        Console.WriteLine($"Размер файла: {plaintext.Length} символов, ~{plaintext.Length * sizeof(char) / 1024} KB");
+                    } else
+                    {
+                        Console.WriteLine("Файл не найден");
+                        plaintext = "Hello World!!!!.Hello World!!!!.";
+                        Console.WriteLine($"Plaintext: {plaintext}");
+                    }
+                    break;
+                case "2":                    
+                    plaintext = Environment.GetEnvironmentVariable("TEXT");
+                    Console.WriteLine($"Plaintext: {plaintext}");
+                    break;
+                default:
+                    Console.WriteLine("Неверный ввод.");
+                    break;
             }
 
+            Console.WriteLine();
+           
             string key = Environment.GetEnvironmentVariable("KEY");
             
             string iv = "1234567890ABCDEF";
 
-            Console.WriteLine($"Plaintext: {plaintext}");
+            
             Console.WriteLine($"Key: {key}");
             Console.WriteLine($"IV: {iv}");
             Console.WriteLine();
@@ -40,7 +63,7 @@ namespace MyApp
             Console.WriteLine("2 - CBC Mode");
             Console.Write("Выберите режим: ");
 
-            string input = Console.ReadLine();
+            input = Console.ReadLine();
 
             switch (input)
             {
@@ -90,13 +113,13 @@ namespace MyApp
 
             string encryptedCustomHex = BitConverter.ToString(encryptedCustom).Replace("-", "");
             string encryptedStandardHex = BitConverter.ToString(encryptedStandard).Replace("-", "");
-            Console.WriteLine($"Custom Encrypted (Hex):  {encryptedCustomHex}");
-            Console.WriteLine($"Standard Encrypted (Hex): {encryptedStandardHex}");
-
             string decryptedCustomText = Encoding.UTF8.GetString(decryptedCustom);
             string decryptedStandardText = Encoding.UTF8.GetString(decryptedStandard);
-            Console.WriteLine($"Custom Decrypted:  {decryptedCustomText}");
-            Console.WriteLine($"Standard Decrypted: {decryptedStandardText}");
+
+            //Console.WriteLine($"Custom Encrypted (Hex):  {encryptedCustomHex}");
+            //Console.WriteLine($"Standard Encrypted (Hex): {encryptedStandardHex}");
+            //Console.WriteLine($"Custom Decrypted:  {decryptedCustomText}");
+            //Console.WriteLine($"Standard Decrypted: {decryptedStandardText}");
 
             double msPerTick = 1000.0 / Stopwatch.Frequency;
             Console.WriteLine("\nExecution Time (ms):");
@@ -139,13 +162,13 @@ namespace MyApp
 
             string encryptedCustomHex = BitConverter.ToString(encryptedCustom).Replace("-", "");
             string encryptedStandardHex = BitConverter.ToString(encryptedStandard).Replace("-", "");
-            Console.WriteLine($"Custom Encrypted (Hex):  {encryptedCustomHex}");
-            Console.WriteLine($"Standard Encrypted (Hex): {encryptedStandardHex}");
-
             string decryptedCustomText = Encoding.UTF8.GetString(decryptedCustom);
             string decryptedStandardText = Encoding.UTF8.GetString(decryptedStandard);
-            Console.WriteLine($"Custom Decrypted:  {decryptedCustomText}");
-            Console.WriteLine($"Standard Decrypted: {decryptedStandardText}");
+
+            //Console.WriteLine($"Custom Encrypted (Hex):  {encryptedCustomHex}"); 
+            //Console.WriteLine($"Standard Encrypted (Hex): {encryptedStandardHex}");
+            //Console.WriteLine($"Custom Decrypted:  {decryptedCustomText}");
+            //Console.WriteLine($"Standard Decrypted: {decryptedStandardText}");
 
             double msPerTick = 1000.0 / Stopwatch.Frequency;
             Console.WriteLine("\nExecution Time (ms):");
